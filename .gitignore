@@ -4,6 +4,8 @@ venv/
 
 # Variables de entorno (en cualquier carpeta, como Backend/.env)
 .env
+Backend/.env
+backend/.env
 .env.*
 !.env.example
 
