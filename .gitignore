@@ -1,0 +1,21 @@
+# Entorno virtual de Python
+venv/
+.venv/
+
+# Variables de entorno (en cualquier carpeta, como Backend/.env)
+.env
+.env.*
+!.env.example
+
+# Archivos temporales y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Archivos del sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
