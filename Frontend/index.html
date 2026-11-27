@@ -12,8 +12,8 @@
     <div class="app-shell">
       <aside class="sidebar">
         <a class="brand" href="#" aria-label="Estilo Urbano, inicio">
-          <span class="brand-mark">👤</span>
-          <span class="brand-name">Estilo <strong>Urbano</strong></span>
+          <span class="brand-mark" role="img" aria-label="Logo de Aurora Vogue"></span>
+          <span class="brand-name">Aurora <strong>Vogue</strong></span>
         </a>
 
         <div class="sidebar-label">MENÚ</div>
@@ -43,7 +43,7 @@
         </header>
 
         <section class="decoration-banner" aria-label="Imagen decorativa de SenaModa">
-          <h2 class="decoration-title">SenaModa</h2>
+
         </section>
 
         <section class="page-heading">
@@ -130,6 +130,16 @@
             <input name="precio" type="number" min="1" step="any" placeholder="129000" required />
           </label>
         </div>
+        <label class="form-field">
+          <span>URL pública de la imagen (opcional)</span>
+          <input
+            name="image_url"
+            type="text"
+            maxlength="2048"
+            placeholder="https://sitio.com/chaqueta.jpg"
+            autocomplete="url"
+          />
+        </label>
         <label class="checkbox-field">
           <input name="en_exhibicion" type="checkbox" checked />
           <span>La prenda está en exhibición</span>

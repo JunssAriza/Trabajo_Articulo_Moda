@@ -106,6 +106,15 @@ function createProductCard(item) {
   garment.textContent = "✳";
   art.append(garment);
 
+  if (item.image_url) {
+    const image = document.createElement("img");
+    image.className = "product-image";
+    image.src = item.image_url;
+    image.alt = item.prenda;
+    image.addEventListener("error", () => image.remove(), { once: true });
+    art.append(image);
+  }
+
   const status = document.createElement("span");
   status.className = `product-status${item.en_exhibicion ? "" : " unavailable"}`;
   status.textContent = item.en_exhibicion ? "En exhibición" : "Fuera de exhibición";
@@ -214,6 +223,7 @@ function openDialog(item = null) {
     form.elements.talla.value = item.talla;
     form.elements.precio.value = item.precio;
     form.elements.en_exhibicion.checked = item.en_exhibicion;
+    form.elements.image_url.value = item.image_url ?? "";
   }
   dialog.showModal();
   form.elements.prenda.focus();
@@ -234,6 +244,7 @@ async function saveItem(event) {
     talla: formData.get("talla").trim(),
     precio: Number(formData.get("precio")),
     en_exhibicion: formData.has("en_exhibicion"),
+    image_url: formData.get("image_url").trim() || null,
   };
   const url = editingId ? `${PRENDAS_URL}/${encodeURIComponent(editingId)}` : PRENDAS_URL;
 

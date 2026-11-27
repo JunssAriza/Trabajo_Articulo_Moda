@@ -6,9 +6,10 @@ Caso de estudio: Boutique de Moda "Estilo Urbano" (colección: prendas).
 
 from datetime import datetime
 from typing import Annotated
+from urllib.parse import urlsplit
 
 from bson import ObjectId
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic_core import core_schema
 
 
@@ -33,6 +34,32 @@ class _ObjectIdPydanticAnnotation:
 
 # Tipo de dato reutilizable para Pydantic
 PyObjectId = Annotated[str, _ObjectIdPydanticAnnotation]
+
+
+def _validate_image_url(value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    value = value.strip()
+    if not value:
+        return None
+
+    parsed = urlsplit(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("La imagen debe ser una URL pública HTTP o HTTPS.")
+
+    return value
+
+
+ImageUrl = Annotated[
+    str | None,
+    Field(
+        default=None,
+        max_length=2048,
+        description="URL pública HTTP/HTTPS de la imagen; no se almacena el archivo.",
+    ),
+    AfterValidator(_validate_image_url),
+]
 
 
 class ArticuloModaBase(BaseModel):
@@ -60,6 +87,7 @@ class ArticuloModaBase(BaseModel):
         default=True,
         description="Indica si la prenda se encuentra actualmente en exhibición",
     )
+    image_url: ImageUrl = None
 
 
 class ArticuloModaCreate(ArticuloModaBase):
@@ -73,6 +101,7 @@ class ArticuloModaUpdate(BaseModel):
     talla: str | None = Field(None, min_length=1, max_length=20)
     precio: float | None = Field(None, gt=0)
     en_exhibicion: bool | None = None
+    image_url: ImageUrl = None
 
 
 class ArticuloModa(ArticuloModaBase):
@@ -97,6 +126,7 @@ class ArticuloModa(ArticuloModaBase):
                 "talla": "M",
                 "precio": 129000.0,
                 "en_exhibicion": True,
+                "image_url": "img/chaqueta-oversize.jpg",
                 "fecha_creacion": "2026-11-20T10:48:00",
             }
         },
