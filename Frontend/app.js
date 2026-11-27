@@ -13,6 +13,9 @@ const searchInput = document.querySelector("#search-input");
 let activeFilter = "all";
 const notice = document.querySelector("#notice");
 const dialog = document.querySelector("#item-dialog");
+const imagePreviewDialog = document.querySelector("#image-preview-dialog");
+const imagePreview = document.querySelector("#image-preview-image");
+const imagePreviewCaption = document.querySelector("#image-preview-caption");
 const form = document.querySelector("#item-form");
 const formError = document.querySelector("#form-error");
 const saveButton = document.querySelector("#save-item-button");
@@ -35,6 +38,13 @@ function formatPrice(price) {
     currency: "COP",
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+function openImagePreview(imageUrl, itemName) {
+  imagePreview.src = imageUrl;
+  imagePreview.alt = itemName;
+  imagePreviewCaption.textContent = itemName;
+  imagePreviewDialog.showModal();
 }
 
 function showNotice(message) {
@@ -107,18 +117,22 @@ function createProductCard(item) {
 
   const art = document.createElement("div");
   art.className = "product-art";
-  art.setAttribute("aria-hidden", "true");
   const garment = document.createElement("span");
   garment.className = "garment";
+  garment.setAttribute("aria-hidden", "true");
   garment.textContent = "✳";
   art.append(garment);
 
   const imageUrl = item.imagen_url ?? item.image_url;
   if (imageUrl) {
+    const imageButton = document.createElement("button");
+    imageButton.className = "product-image-button";
+    imageButton.type = "button";
+    imageButton.setAttribute("aria-label", `Ampliar imagen de ${item.prenda}`);
     const image = document.createElement("img");
     image.className = "product-image";
     image.src = imageUrl;
-    image.alt = item.prenda;
+    image.alt = "";
     image.addEventListener(
       "error",
       () => {
@@ -126,7 +140,11 @@ function createProductCard(item) {
       },
       { once: true },
     );
-    art.append(image);
+    imageButton.addEventListener("click", () => {
+      openImagePreview(image.currentSrc || image.src, item.prenda);
+    });
+    imageButton.append(image);
+    art.append(imageButton);
   }
 
   const status = document.createElement("span");
@@ -299,6 +317,15 @@ async function deleteItem(item) {
 document.querySelector("#add-item-button").addEventListener("click", () => openDialog());
 document.querySelector("#close-dialog-button").addEventListener("click", closeDialog);
 document.querySelector("#cancel-dialog-button").addEventListener("click", closeDialog);
+document.querySelector("#close-image-preview-button").addEventListener("click", () => {
+  imagePreviewDialog.close();
+});
+imagePreviewDialog.addEventListener("click", (event) => {
+  if (event.target === imagePreviewDialog) imagePreviewDialog.close();
+});
+imagePreviewDialog.addEventListener("close", () => {
+  imagePreview.removeAttribute("src");
+});
 form.addEventListener("submit", saveItem);
 searchInput.addEventListener("input", renderItems);
 
