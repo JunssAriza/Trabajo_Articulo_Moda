@@ -144,7 +144,7 @@ h1 span { color: var(--accent); }
 .garment { color: #79644f; font-size: 54px; line-height: 1; }
 .product-image-button { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
 .product-image-button:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
-.product-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.product-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .product-status { position: absolute; top: 8px; left: 8px; padding: 4px 7px; border-radius: 3px; background: var(--white); color: #42633a; font-size: 10px; pointer-events: none; }
 .product-status.unavailable { color: #8a653d; }
 .product-details { padding: 11px; }
