@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://api-adso-grupo-x-juan-ariza.onrender.com/prendas";
+const API_BASE_URL = "https://api-adso-grupo-x-juan-ariza.onrender.com";
 const PRENDAS_URL = `${API_BASE_URL}/prendas`;
 
 const productGrid = document.querySelector("#product-grid");
