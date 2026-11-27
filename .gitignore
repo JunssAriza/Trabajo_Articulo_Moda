@@ -21,8 +21,3 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
-
-#Archivos de imagenes jpg
-
-img/
-.img/

@@ -4,12 +4,12 @@ Define esquemas Pydantic y adaptadores para ObjectId de MongoDB.
 Caso de estudio: Boutique de Moda "Estilo Urbano" (colección: prendas).
 """
 
-from datetime import datetime
+from datetime import datetime  # noqa: I001
 from typing import Annotated
 from urllib.parse import urlsplit
 
 from bson import ObjectId
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, AfterValidator, BaseModel, ConfigDict, Field
 from pydantic_core import core_schema
 
 
@@ -51,10 +51,9 @@ def _validate_image_url(value: str | None) -> str | None:
     return value
 
 
-ImageUrl = Annotated[
+ImagenUrl = Annotated[
     str | None,
     Field(
-        default=None,
         max_length=2048,
         description="URL pública HTTP/HTTPS de la imagen; no se almacena el archivo.",
     ),
@@ -87,7 +86,10 @@ class ArticuloModaBase(BaseModel):
         default=True,
         description="Indica si la prenda se encuentra actualmente en exhibición",
     )
-    image_url: ImageUrl = None
+    imagen_url: ImagenUrl = Field(
+        default=None,
+        validation_alias=AliasChoices("imagen_url", "image_url"),
+    )
 
 
 class ArticuloModaCreate(ArticuloModaBase):
@@ -101,7 +103,10 @@ class ArticuloModaUpdate(BaseModel):
     talla: str | None = Field(None, min_length=1, max_length=20)
     precio: float | None = Field(None, gt=0)
     en_exhibicion: bool | None = None
-    image_url: ImageUrl = None
+    imagen_url: ImagenUrl | None = Field(
+        default=None,
+        validation_alias=AliasChoices("imagen_url", "image_url"),
+    )
 
 
 class ArticuloModa(ArticuloModaBase):
@@ -126,7 +131,7 @@ class ArticuloModa(ArticuloModaBase):
                 "talla": "M",
                 "precio": 129000.0,
                 "en_exhibicion": True,
-                "image_url": "img/chaqueta-oversize.jpg",
+                "imagen_url": "https://ejemplo.com/chaqueta-oversize.jpg",
                 "fecha_creacion": "2026-11-20T10:48:00",
             }
         },

@@ -1,9 +1,16 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const configuredApiUrl =
+  window.API_BASE_URL ||
+  document.querySelector('meta[name="api-base-url"]')?.content?.trim();
+const API_BASE_URL =
+  configuredApiUrl ||
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : "https://trabajo-articulo-moda.onrender.com");
 const PRENDAS_URL = `${API_BASE_URL}/prendas`;
 
 const productGrid = document.querySelector("#product-grid");
 const searchInput = document.querySelector("#search-input");
-const statusFilter = document.querySelector("#status-filter");
+let activeFilter = "all";
 const notice = document.querySelector("#notice");
 const dialog = document.querySelector("#item-dialog");
 const form = document.querySelector("#item-form");
@@ -106,12 +113,19 @@ function createProductCard(item) {
   garment.textContent = "✳";
   art.append(garment);
 
-  if (item.image_url) {
+  const imageUrl = item.imagen_url ?? item.image_url;
+  if (imageUrl) {
     const image = document.createElement("img");
     image.className = "product-image";
-    image.src = item.image_url;
+    image.src = imageUrl;
     image.alt = item.prenda;
-    image.addEventListener("error", () => image.remove(), { once: true });
+    image.addEventListener(
+      "error",
+      () => {
+        image.src = "https://via.placeholder.com/300x180?text=Sin+Imagen";
+      },
+      { once: true },
+    );
     art.append(image);
   }
 
@@ -153,13 +167,17 @@ function createProductCard(item) {
 
 function renderItems() {
   const query = searchInput.value.trim().toLocaleLowerCase("es");
-  const filter = statusFilter.value;
+  const filter = activeFilter;
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const visibleItems = items.filter((item) => {
     const matchesText = `${item.prenda} ${item.talla}`.toLocaleLowerCase("es").includes(query);
+    const itemDate = item.fecha_creacion ? new Date(item.fecha_creacion) : null;
     const matchesStatus =
       filter === "all" ||
       (filter === "available" && item.en_exhibicion) ||
-      (filter === "unavailable" && !item.en_exhibicion);
+      (filter === "unavailable" && !item.en_exhibicion) ||
+      (filter === "new" && itemDate && itemDate >= sevenDaysAgo);
     return matchesText && matchesStatus;
   });
 
@@ -212,6 +230,9 @@ async function loadItems() {
 function openDialog(item = null) {
   editingId = item ? getId(item) : null;
   form.reset();
+  form.querySelectorAll("input").forEach((input) => {
+    input.disabled = false;
+  });
   form.elements.en_exhibicion.checked = true;
   formError.hidden = true;
   formError.textContent = "";
@@ -223,13 +244,17 @@ function openDialog(item = null) {
     form.elements.talla.value = item.talla;
     form.elements.precio.value = item.precio;
     form.elements.en_exhibicion.checked = item.en_exhibicion;
-    form.elements.image_url.value = item.image_url ?? "";
+    form.elements.imagen_url.value = item.imagen_url ?? item.image_url ?? "";
   }
   dialog.showModal();
   form.elements.prenda.focus();
 }
 
 function closeDialog() {
+  form.reset();
+  form.querySelectorAll("input").forEach((input) => {
+    input.disabled = true;
+  });
   dialog.close();
 }
 
@@ -244,7 +269,8 @@ async function saveItem(event) {
     talla: formData.get("talla").trim(),
     precio: Number(formData.get("precio")),
     en_exhibicion: formData.has("en_exhibicion"),
-    image_url: formData.get("image_url").trim() || null,
+    imagen_url: formData.get("imagen_url").trim(),
+    image_url: formData.get("imagen_url").trim(),
   };
   const url = editingId ? `${PRENDAS_URL}/${encodeURIComponent(editingId)}` : PRENDAS_URL;
 
@@ -275,6 +301,24 @@ document.querySelector("#close-dialog-button").addEventListener("click", closeDi
 document.querySelector("#cancel-dialog-button").addEventListener("click", closeDialog);
 form.addEventListener("submit", saveItem);
 searchInput.addEventListener("input", renderItems);
-statusFilter.addEventListener("change", renderItems);
 
+document.querySelectorAll(".nav-filter").forEach((button) => {
+  button.addEventListener("click", () => {
+    activeFilter = button.dataset.filter;
+    document.querySelectorAll(".nav-filter").forEach((filterButton) => {
+      const selected = filterButton === button;
+      filterButton.classList.toggle("active", selected);
+      if (selected) {
+        filterButton.setAttribute("aria-current", "page");
+      } else {
+        filterButton.removeAttribute("aria-current");
+      }
+    });
+    renderItems();
+  });
+});
+
+form.querySelectorAll("input").forEach((input) => {
+  input.disabled = true;
+});
 loadItems();

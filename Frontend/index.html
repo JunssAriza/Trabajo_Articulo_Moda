@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f6f5f2" />
+    <meta name="api-base-url" content="" />
     <title>Estilo Urbano | Inventario</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" defer></script>
@@ -12,16 +13,16 @@
     <div class="app-shell">
       <aside class="sidebar">
         <a class="brand" href="#" aria-label="Estilo Urbano, inicio">
-          <span class="brand-mark" role="img" aria-label="Logo de Aurora Vogue"></span>
-          <span class="brand-name">Aurora <strong>Vogue</strong></span>
+          <span class="brand-mark" role="img" aria-label="Logo de Estilo Urbano"></span>
+          <span class="brand-name">Estilo <strong>Urbano</strong></span>
         </a>
 
         <div class="sidebar-label">MENÚ</div>
         <nav class="side-nav" aria-label="Navegación principal">
-          <a class="nav-link active" href="#inventario" aria-current="page">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
-            Inventario
-          </a>
+          <button class="nav-filter active" type="button" data-filter="all" aria-current="page">Colección</button>
+          <button class="nav-filter" type="button" data-filter="available">En Exhibición</button>
+          <button class="nav-filter" type="button" data-filter="unavailable">Sin Stock</button>
+          <button class="nav-filter" type="button" data-filter="new">Nueva Prenda</button>
         </nav>
 
         <div class="sidebar-bottom">
@@ -54,7 +55,7 @@
           </div>
           <button class="button button-primary" id="add-item-button" type="button">
             <span class="button-plus" aria-hidden="true">+</span>
-            <span class="Prenda">Agregar prenda</span>
+            <span class="Prenda">Nueva Prenda</span>
           </button>
         </section>
 
@@ -89,14 +90,6 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
               <input id="search-input" type="search" placeholder="Buscar una prenda…" autocomplete="off" />
             </label>
-            <label class="filter-wrap">
-              <span class="sr-only">Filtrar por estado</span>
-              <select id="status-filter">
-                <option value="all">Todos los estados</option>
-                <option value="available">En exhibición</option>
-                <option value="unavailable">Fuera de exhibición</option>
-              </select>
-            </label>
             <span class="result-count" id="result-count"></span>
           </div>
 
@@ -118,30 +111,33 @@
         </div>
         <label class="form-field">
           <span>Nombre de la prenda</span>
-          <input name="prenda" type="text" minlength="2" maxlength="150" placeholder="Ej. Chaqueta oversize" required />
+          <input name="prenda" type="text" minlength="2" maxlength="150" placeholder="Ej. Chaqueta oversize" required disabled />
         </label>
         <div class="form-row">
           <label class="form-field">
             <span>Talla</span>
-            <input name="talla" type="text" maxlength="20" placeholder="Ej. M" required />
+            <input name="talla" type="text" maxlength="20" placeholder="Ej. M" required disabled />
           </label>
           <label class="form-field">
             <span>Precio (COP)</span>
-            <input name="precio" type="number" min="1" step="any" placeholder="129000" required />
+            <input name="precio" type="number" min="1" step="any" placeholder="129000" required disabled />
           </label>
         </div>
         <label class="form-field">
-          <span>URL pública de la imagen (opcional)</span>
+          <span>URL pública de la imagen</span>
           <input
-            name="image_url"
-            type="text"
+            name="imagen_url"
+            id="imagen-url"
+            type="url"
             maxlength="2048"
             placeholder="https://sitio.com/chaqueta.jpg"
             autocomplete="url"
+            required
+            disabled
           />
         </label>
         <label class="checkbox-field">
-          <input name="en_exhibicion" type="checkbox" checked />
+          <input name="en_exhibicion" type="checkbox" checked disabled />
           <span>La prenda está en exhibición</span>
         </label>
         <p class="form-error" id="form-error" role="alert" hidden></p>
