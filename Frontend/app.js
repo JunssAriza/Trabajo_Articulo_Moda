@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://api-adso-grupo-x-juan-ariza.onrender.com/prendas";
 const PRENDAS_URL = `${API_BASE_URL}/prendas`;
 
 const productGrid = document.querySelector("#product-grid");
